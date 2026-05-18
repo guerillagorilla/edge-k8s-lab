@@ -1,0 +1,79 @@
+# ------------------------------------------------------------------------------
+# edge-hello default values
+# Override per target: values-ocp.yaml, values-k3s.yaml, values-microshift.yaml
+# ------------------------------------------------------------------------------
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: alpine
+  pullPolicy: IfNotPresent
+
+# Message shown on the hello-world page — override per target so you can tell
+# at a glance which cluster served the response.
+app:
+  message: "Hello from edge-hello!"
+  # Set to the target name so it shows in the page — overridden per values file.
+  target: "unknown"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+# --- Routing ---
+# OCP uses Routes; k3s and MicroShift use Ingress.
+# Set exactly one of these to true per target values file.
+route:
+  enabled: false
+  # host is optional on OCP — the router assigns one if left empty.
+  host: ""
+
+ingress:
+  enabled: false
+  className: ""     # "traefik" for k3d; "" for MicroShift (uses built-in router)
+  host: "edge-hello.local"
+  tls: false
+
+# --- Resources ---
+# Defined from day one so Phase 3 (scheduler/OOM work) has something to tune.
+resources:
+  requests:
+    cpu: 50m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 64Mi
+
+# --- Security context ---
+# Non-root by default — prepares for Phase 4 SCC work on OCP.
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  readOnlyRootFilesystem: false   # nginx needs to write tmp dirs; flip in Phase 4
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+# --- Probes ---
+# Defined from day one — break these deliberately in Phase 3.
+livenessProbe:
+  enabled: true
+  path: /healthz
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+readinessProbe:
+  enabled: true
+  path: /healthz
+  initialDelaySeconds: 3
+  periodSeconds: 5
+
+# --- Persistent storage (disabled by default, enabled in Phase 3) ---
+persistence:
+  enabled: false
+  storageClass: ""    # leave empty to use cluster default
+  size: 1Gi
+  mountPath: /data
