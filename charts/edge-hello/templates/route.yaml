@@ -1,0 +1,21 @@
+{{- if .Values.route.enabled }}
+# OCP-specific resource — will fail on k3s/MicroShift if route.enabled: true by mistake.
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "edge-hello.fullname" . }}
+  labels:
+    {{- include "edge-hello.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.route.host }}
+  host: {{ .Values.route.host }}
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ include "edge-hello.fullname" . }}
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+{{- end }}

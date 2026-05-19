@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "edge-hello.fullname" . }}-config
+  labels:
+    {{- include "edge-hello.labels" . | nindent 4 }}
+data:
+  # Custom nginx config: listens on 8080 (non-root port) and adds /healthz.
+  nginx.conf: |
+    pid /var/run/nginx.pid;
+    server {
+      listen 8080;
+      server_name _;
+
+      location / {
+        root /usr/share/nginx/html;
+        index index.html;
+      }
+
+      location /healthz {
+        access_log off;
+        return 200 "ok\n";
+        add_header Content-Type text/plain;
+      }
+    }
+
+  # Hello-world page — shows target name and message from values.
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>edge-hello</title>
+      <style>
+        body { font-family: sans-serif; margin: 4rem auto; max-width: 640px; color: #1a1a1a; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px;
+                 background: #e8f4e8; color: #1a5c1a; font-size: 0.85rem; }
+        h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .meta { color: #666; font-size: 0.9rem; margin-top: 1rem; }
+      </style>
+    </head>
+    <body>
+      <span class="badge">{{ .Values.app.target }}</span>
+      <h1>{{ .Values.app.message }}</h1>
+      <p class="meta">
+        Chart version: {{ .Chart.Version }}<br>
+        Release: {{ .Release.Name }}<br>
+        Namespace: {{ .Release.Namespace }}
+      </p>
+    </body>
+    </html>

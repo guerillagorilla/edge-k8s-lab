@@ -1,0 +1,8 @@
+apiVersion: v2
+name: edge-hello
+description: >
+  Hello-world chart for learning k3s, OCP, and MicroShift across a
+  hub-spoke GitOps topology. Parameterized per distribution target.
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

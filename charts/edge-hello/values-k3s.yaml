@@ -1,0 +1,15 @@
+# values-k3s.yaml — overrides for k3d / k3s clusters
+# Apply with: helm upgrade --install edge-hello . -f values-k3s.yaml
+
+app:
+  message: "Hello from k3s!"
+  target: "k3d-edge-site-1"
+
+route:
+  enabled: false
+
+ingress:
+  enabled: true
+  className: "traefik"    # k3d ships Traefik by default
+  host: "edge-hello.local"
+  tls: false

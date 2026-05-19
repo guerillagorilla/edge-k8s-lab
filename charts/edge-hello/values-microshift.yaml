@@ -1,0 +1,26 @@
+# values-microshift.yaml — overrides for MicroShift (RHEL VM)
+# Apply with: helm upgrade --install edge-hello . -f values-microshift.yaml
+
+app:
+  message: "Hello from MicroShift!"
+  target: "microshift-edge-1"
+
+route:
+  enabled: false
+
+# MicroShift includes the OCP router but exposes it via Ingress object.
+# No ingress class needed — MicroShift's built-in router handles it.
+ingress:
+  enabled: true
+  className: ""
+  host: "edge-hello.microshift.local"
+  tls: false
+
+# MicroShift runs on constrained hardware — keep resources lean.
+resources:
+  requests:
+    cpu: 25m
+    memory: 16Mi
+  limits:
+    cpu: 100m
+    memory: 48Mi

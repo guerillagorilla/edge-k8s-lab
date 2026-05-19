@@ -1,0 +1,26 @@
+# values-ocp.yaml — overrides for CRC / OpenShift Container Platform
+# Apply with: helm upgrade --install edge-hello . -f values-ocp.yaml
+
+app:
+  message: "Hello from OpenShift!"
+  target: "ocp-crc"
+
+# OCP uses Routes, not Ingress.
+route:
+  enabled: true
+  host: ""    # leave empty — OCP router auto-assigns *.apps-crc.testing
+
+ingress:
+  enabled: false
+
+# OCP enforces stricter UIDs via SCCs — use the restricted SCC range.
+# The default 1001 may be rejected; OCP typically assigns a UID from the
+# namespace's allowed range. Set runAsUser: null to let OCP assign it.
+securityContext:
+  runAsNonRoot: true
+  runAsUser: null
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL

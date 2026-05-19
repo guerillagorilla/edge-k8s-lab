@@ -1,3 +1,4 @@
-crc/crc-macos-installer.pkg
-crc/pull-secret.txt
+crc/
 .DS_Store
+*.tar.gz
+values-local.yaml
