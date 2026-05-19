@@ -6,8 +6,8 @@ metadata:
     {{- include "edge-hello.labels" . | nindent 4 }}
 data:
   # Custom nginx config: listens on 8080 (non-root port) and adds /healthz.
+  # pid directive omitted — it belongs in the main nginx.conf, not conf.d includes.
   nginx.conf: |
-    pid /var/run/nginx.pid;
     server {
       listen 8080;
       server_name _;
