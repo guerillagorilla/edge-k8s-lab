@@ -1,0 +1,4 @@
+apiVersion: v2
+name: nginx
+description: A simple nginx demo
+version: 0.1.0
